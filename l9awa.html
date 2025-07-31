@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Apple of Fortune - VIP Predictions</title>
+  <style>
+    body {
+      background: url('https://i.postimg.cc/3rpW27V2/IMG-20250731-WA0004.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .box {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      width: 95%;
+      max-width: 600px;
+      box-shadow: 0 0 25px #0f0;
+    }
+
+    input {
+      width: 100%;
+      padding: 20px;
+      margin: 15px 0;
+      border: 2px solid white;
+      border-radius: 25px;
+      background-color: rgba(255, 255, 255, 0.05);
+      color: white;
+      font-size: 20px;
+      text-align: center;
+    }
+
+    input::placeholder {
+      color: #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 18px;
+      margin: 12px 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 2px solid white;
+      border-radius: 25px;
+      font-size: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .multiplier {
+      font-size: 26px;
+      margin-bottom: 15px;
+      color: gold;
+      font-weight: bold;
+    }
+
+    .apples {
+      font-size: 40px;
+      margin: 25px 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .apple-img {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      box-shadow: 0 0 8px #0f0;
+    }
+
+    .start-preview {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .preview-img {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px #0f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Section -->
+  <div class="box" id="login-box">
+    <!-- Logo removed -->
+
+    <input type="text" id="id" placeholder="ID" />
+    <input type="text" id="key" placeholder="Key" />
+
+    <button onclick="startGame()">تسجيل دخول</button>
+
+    <a href="https://t.me/+TDm5fPZzZv4zNmQ0" target="_blank">
+      <button>TELEGRAM CHANNEL</button>
+    </a>
+  </div>
+
+  <!-- Welcome Preview Section (5 Images + START) -->
+  <div class="box" id="welcome-box" style="display: none;">
+    <div class="start-preview" id="preview-images">
+      <img src="https://i.postimg.cc/xd5xZ9h3/SfK.webp" class="preview-img" />
+      <img src="https://i.postimg.cc/xd5xZ9h3/SfK.webp" class="preview-img" />
+      <img src="https://i.postimg.cc/xd5xZ9h3/SfK.webp" class="preview-img" />
+      <img src="https://i.postimg.cc/xd5xZ9h3/SfK.webp" class="preview-img" />
+      <img src="https://i.postimg.cc/xd5xZ9h3/SfK.webp" class="preview-img" />
+    </div>
+    <button onclick="beginGame()">START</button>
+  </div>
+
+  <!-- Game Section -->
+  <div class="box" id="game-box" style="display:none;">
+    <div class="multiplier" id="multiplier">X1.23</div>
+    <div class="apples" id="apples"></div>
+    <button onclick="nextStage()">Next</button>
+    <button onclick="restartGame()">Restart</button>
+  </div>
+
+  <script>
+    const multipliers = [
+      "X1.23", "X1.54", "X1.93", "X2.41", "X4.02",
+      "X6.71", "X11.18", "X27.97", "X69.93", "X349.68"
+    ];
+
+    const stages = [
+      { win: 4, lose: 1 },
+      { win: 4, lose: 1 },
+      { win: 4, lose: 1 },
+      { win: 4, lose: 1 },
+      { win: 3, lose: 2 },
+      { win: 3, lose: 2 },
+      { win: 3, lose: 2 },
+      { win: 2, lose: 3 },
+      { win: 2, lose: 3 },
+      { win: 1, lose: 4 }
+    ];
+
+    let currentStage = 0;
+
+    function startGame() {
+      const id = document.getElementById("id").value.trim();
+      const key = document.getElementById("key").value.trim();
+      const correctKey = "MAFYOUZIVIP2005";
+
+      if (!id || !key) {
+        alert("يرجى إدخال ID و KEY.");
+        return;
+      }
+
+      if (key !== correctKey) {
+        alert("❌ المفتاح غير صحيح.");
+        return;
+      }
+
+      document.getElementById("login-box").style.display = "none";
+      document.getElementById("welcome-box").style.display = "block";
+    }
+
+    function beginGame() {
+      document.getElementById("welcome-box").style.display = "none";
+      document.getElementById("game-box").style.display = "block";
+      currentStage = 0;
+      showStage();
+    }
+
+    function showStage() {
+      if (currentStage >= stages.length) return;
+
+      const s = stages[currentStage];
+      const applesArray = Array(s.win).fill("win").concat(Array(s.lose).fill("lose"));
+      shuffle(applesArray);
+
+      const applesHTML = applesArray.map(type => {
+        const src = type === "win"
+          ? "https://i.postimg.cc/vTQWwMsG/H3D.webp"
+          : "https://i.postimg.cc/zv0TJMzK/0Qs.webp";
+        return `<img src="${src}" class="apple-img" />`;
+      }).join("");
+
+      document.getElementById("apples").innerHTML = applesHTML;
+      document.getElementById("multiplier").innerText = multipliers[currentStage];
+    }
+
+    function nextStage() {
+      if (currentStage < stages.length - 1) {
+        currentStage++;
+        showStage();
+      } else {
+        alert("✅ اللعبة انتهت!");
+      }
+    }
+
+    function restartGame() {
+      currentStage = 0;
+      document.getElementById("game-box").style.display = "none";
+      document.getElementById("welcome-box").style.display = "block";
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+  </script>
+
+</body>
+</html>
